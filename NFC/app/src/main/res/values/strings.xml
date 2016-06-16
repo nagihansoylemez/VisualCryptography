@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">NFC</string>
+    <string name="action_settings">Settings</string>
+    <string name="Button">Paylaştıran</string>
+    <string name="Button2">Paylaşan</string>
+    <string name="textView">Kullanıcı türünü seçiniz.</string>
+    <string name="title_activity_main2">Paylaştıran</string>
+    <string name="title_activity_main3">Paylaşan</string>
+    <string name="btn">Resim Seç</string>
+    <string name="btnSifrele">Şifrele</string>
+
+
+</resources>
