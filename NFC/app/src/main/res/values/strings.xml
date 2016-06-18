@@ -7,7 +7,10 @@
     <string name="title_activity_main2">Paylaştıran</string>
     <string name="title_activity_main3">Paylaşan</string>
     <string name="btn">Resim Seç</string>
-    <string name="btnSifrele">Şifrele</string>
+    <string name="crypto_btn_text">Şifrele</string>
+    <string name="text_original_image">Orjinal Resim</string>
+    <string name="text_share_one_image">Pay 1</string>
+    <string name="text_share_two_image">Pay 2</string>
 
 
 </resources>
