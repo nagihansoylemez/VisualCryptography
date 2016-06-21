@@ -1,13 +1,21 @@
 package com.example.na.nfc;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
@@ -17,13 +25,18 @@ import android.widget.ImageView;
 
 import com.example.na.nfc.listeners.CryptoListener;
 
+import java.io.IOException;
 
-public class MainActivity extends Activity {
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,CryptoListener {
 
     private static final String TAG ="TestApp";
-    private Button cryptoBtn;
+    private Button cryptoBtn,chooseImage;
+    private int PICK_IMAGE_REQUEST=1;
     private ImageView original,shareOne,shareTwo;
     private VisualCrypter mCrypter;
+    private ProgressDialog cryptoProgress;
+    private Bitmap choosenImage;
 
     // TODO : Create imageViews, run algorithm, show shares on ui.
     // TODO : check devices NFC compatibility.
@@ -32,50 +45,61 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_master);
+
+        ActionBar actionBar = getActionBar();
+        if(actionBar!=null) {
+            actionBar.setLogo(R.mipmap.ic_launcher);
+            actionBar.setDisplayUseLogoEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }else{
+            Log.i(TAG,"Action BAR is NULL");
+        }
         cryptoBtn = (Button) findViewById(R.id.crypto_button);
+        chooseImage = (Button) findViewById(R.id.uploadImgButton);
+
         original = (ImageView) findViewById(R.id.originalImageView);
         shareOne = (ImageView) findViewById(R.id.sharedOneImageView);
         shareTwo = (ImageView) findViewById(R.id.sharedTwoImageView);
 
-    verifyStoragePermissions(this);
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(),R.drawable.ktu_test_img);
-
-        Log.i(TAG,"Bmp width: " + bmp.getWidth()+ " heigth : " + bmp.getHeight());
-
-        mCrypter = new VisualCrypter(getApplicationContext(),bmp, new CryptoListener() {
-            @Override
-            public void onFinish() {
-
-                Log.i(TAG,"calculate finish.");
-                //shareOne.setImageBitmap(mCrypter.getShareOne());
-                int s1h=mCrypter.getShareOne().getHeight();
-                int s1w = mCrypter.getShareOne().getWidth();
-                //shareTwo.setImageBitmap(mCrypter.getShareTwo());
-
-                shareOne.setImageBitmap(mCrypter.getShareOne());
-                shareTwo.setImageBitmap(mCrypter.getShareTwo());
-
-                mCrypter.writeToFileShare1();
-                mCrypter.writeToFileShare2();
-                mCrypter.XORAndSave();
+        // verify permission for marshmallow and +
+        verifyStoragePermissions(this);
+        // setup listeners...
+        cryptoBtn.setOnClickListener(this);
+        chooseImage.setOnClickListener(this);
+        cryptoProgress = new ProgressDialog(MainActivity.this);
+        cryptoProgress.setTitle("VisualCrypter");
+        cryptoProgress.setMessage("Resim Şifreleniyor Lütfen Bekleyiniz...");
+        cryptoProgress.setIndeterminate(false);
+        cryptoProgress.setMax(100);
+        cryptoProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        cryptoProgress.setCancelable(false);
+        cryptoProgress.create();
 
 
-                Log.i(TAG,"S1 : W : "+ s1w + " H : " + s1h);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+
+            Uri uri = data.getData();
+
+            try {
+                choosenImage = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                final ImageView imageView = (ImageView) findViewById(R.id.originalImageView);
+                imageView.setImageBitmap(choosenImage);
+                mCrypter = new VisualCrypter(getApplicationContext(), choosenImage, this);
             }
-        });
-
-
-
-        cryptoBtn.setOnClickListener(new View.OnClickListener() {
-           @Override
-          public void onClick(View v) {
-               Log.i(TAG,"button clicked!");
-              mCrypter.calculatePixels();
-         }
-       });
-
-
+            catch (IOException e) {
+                Log.i(TAG, "onActivityResult : " + e);
+            }
+        }
     }
 
     @Override
@@ -96,7 +120,6 @@ public class MainActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -126,5 +149,69 @@ public class MainActivity extends Activity {
                     REQUEST_EXTERNAL_STORAGE
             );
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if(v.equals(cryptoBtn)){
+            Log.i(TAG,"crypto button clicked!");
+            if(mCrypter!=null) {
+                Log.i(TAG,"Calculating pixels..");
+                showProgressDialog();
+                new Thread(mCrypter).start();
+            }else{
+                // burada alert dialog göster önce resim seçsin.
+            }
+        }
+
+        if(v.equals(chooseImage)){
+            Intent galleryIntent = new Intent();
+            galleryIntent.setType("image/*");
+            galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(Intent.createChooser(galleryIntent, "Resim Seç"), PICK_IMAGE_REQUEST);
+        }
+    }
+
+    @Override
+    public void onFinish() {
+                closeProgressDialog();
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                int s1h=mCrypter.getShareOne().getHeight();
+                int s1w = mCrypter.getShareOne().getWidth();
+                //shareTwo.setImageBitmap(mCrypter.getShareTwo());
+                shareOne.setImageBitmap(mCrypter.getShareOne());
+                shareTwo.setImageBitmap(mCrypter.getShareTwo());
+
+            }
+        });
+
+
+    }
+
+    private void showProgressDialog(){
+        Log.i(TAG,"Showing progress..");
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                cryptoProgress.show();
+            }
+        });
+
+    }
+
+    private void closeProgressDialog(){
+        Log.i(TAG,"Closing progress..");
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                cryptoProgress.dismiss();
+            }
+        });
+
     }
 }

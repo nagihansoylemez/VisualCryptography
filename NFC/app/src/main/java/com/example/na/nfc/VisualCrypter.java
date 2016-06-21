@@ -2,7 +2,11 @@ package com.example.na.nfc;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -14,16 +18,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.RandomAccessFile;
 import java.util.Random;
 
-public class VisualCrypter {
+public class VisualCrypter implements Runnable{
 
     private static final String TAG = "TestApp";
     private int imgWidth,imgHeight,shareWidth,shareHeight;
     private CryptoListener mCryptoListener;
-    private Bitmap originalImage,shareOne,shareTwo,xored;
+    private Bitmap originalImage,grayImage,binarized,shareOne,shareTwo,xored;
     private Context mContext;
+    private OtsuBinarize otsu;
     private final int [][] patterns ={
             {1,1,0,0},
             {1,0,1,0},
@@ -43,6 +47,7 @@ public class VisualCrypter {
             shareHeight = imgHeight * 2;
             shareOne  = Bitmap.createBitmap(shareWidth,shareHeight,Bitmap.Config.ARGB_8888);
             shareTwo = Bitmap.createBitmap(shareWidth,shareHeight,Bitmap.Config.ARGB_8888);
+            binarized = Bitmap.createBitmap(original.getWidth(),original.getHeight(), Bitmap.Config.ARGB_8888);
 
             mCryptoListener = listener;
             this.mContext = context;
@@ -50,11 +55,16 @@ public class VisualCrypter {
     }
 
 
-    public void calculatePixels(){
+    private void calculatePixels(){
+
+        toGrayscale(originalImage);
+        Log.i(TAG,"Binarized started");
+        binarized = OtsuBinarize.binarizeImage(grayImage,binarized);
+        Log.i(TAG,"Binarized finished");
 
         for(int x=0;x<shareWidth/2;x++){
             for(int y=0;y<shareHeight/2;y++){
-                int pixel = originalImage.getPixel(x,y);
+                int pixel = binarized.getPixel(x,y);
                 int rnd = randomNumber(1,100);
                 int []pat = patterns[rnd];
 
@@ -84,7 +94,12 @@ public class VisualCrypter {
 
 
         if(mCryptoListener!=null) {
+
+            writeToFileShare1();
+            writeToFileShare2();
+            XORAndSave();
             mCryptoListener.onFinish();
+
         }
 
 
@@ -118,7 +133,7 @@ public class VisualCrypter {
         return this.shareTwo;
     }
 
-    public void writeToFileShare1(){
+    private void writeToFileShare1(){
         OutputStream fOut = null;
         File file = null;
         try {
@@ -149,7 +164,7 @@ public class VisualCrypter {
         }
 
     }
-    public void writeToFileShare2(){
+    private void writeToFileShare2(){
         OutputStream fOut = null;
         File file = null;
         try {
@@ -180,7 +195,7 @@ public class VisualCrypter {
         }
 
     }
-    public void writeToFileResult(){
+    private void writeToFileResult(){
         OutputStream fOut = null;
         File file = null;
         try {
@@ -234,4 +249,34 @@ public class VisualCrypter {
 
         return 0;
     }
+
+    @Override
+    public void run() {
+        calculatePixels();
+    }
+
+
+    private void toGrayscale(Bitmap bmpOriginal)
+    {
+
+        Log.i(TAG,"toGrayscale Started...");
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        grayImage = bmpGrayscale;
+        Log.i(TAG,"toGrayscale Finished");
+
+
+    }
+
+
 }
