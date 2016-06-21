@@ -19,7 +19,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:id="@+id/originalImageView"
-            android:src="@drawable/ktu_test_img"
+            android:src="@drawable/nopicture"
             android:layout_gravity="center_horizontal"
             />
         <TextView
