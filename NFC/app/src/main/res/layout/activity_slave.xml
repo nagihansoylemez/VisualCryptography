@@ -4,66 +4,11 @@
     android:layout_height="match_parent"
     android:gravity="center">
 
-
-
     <LinearLayout
         android:layout_width="350dp"
-        android:layout_height="250dp"
-        android:id="@+id/imageUploadLayout"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        android:background="@drawable/layout_borders"
-        android:layout_margin="10dp">
-
-        <ImageView
-            android:layout_marginTop="10dp"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:id="@+id/originalImageView"
-            android:src="@drawable/nopicture"
-            android:layout_gravity="center_horizontal"
-            />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_original_image"
-            android:layout_gravity="center"
-            android:textStyle="bold"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/uploadImgButton"
-            android:text="@string/btn"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"/>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="350dp"
-        android:layout_height="50dp"
-        android:id="@+id/cryptoBtnLayout"
-        android:layout_gravity="center"
-        android:orientation="vertical">
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/crypto_button"
-            android:text="@string/crypto_btn_text"
-            android:layout_gravity="center"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="350dp"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
         android:id="@+id/sharedImagesLayout"
         android:orientation="horizontal"
-        android:layout_gravity="center"
         android:background="@drawable/layout_borders">
 
         <LinearLayout
@@ -74,13 +19,14 @@
             android:layout_gravity="center"
             android:layout_marginLeft="20dp">
             <ImageView
+                android:layout_marginTop="10dp"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:id="@+id/sharedOneImageView"
                 android:src="@drawable/nopicture"
                 android:background="@drawable/layout_borders"
                 />
-            
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -89,15 +35,10 @@
                 android:textStyle="bold"
                 android:layout_margin="5dp"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/sendShareOne"
-                android:text="@string/send_file_btn1"/>
+
         </LinearLayout>
-       
-        
+
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -105,7 +46,9 @@
             android:id="@+id/shareTwoLayout"
             android:layout_gravity="center"
             android:layout_marginLeft="10dp">
+
             <ImageView
+                android:layout_marginTop="10dp"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:id="@+id/sharedTwoImageView"
@@ -120,15 +63,49 @@
                 android:layout_gravity="center"
                 android:textStyle="bold"
                 android:layout_margin="5dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:id="@+id/decryptBtnLayout"
+            android:layout_gravity="center"
+            android:orientation="vertical">
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:id="@+id/sendShareTwo"
-                android:text="@string/send_file_btn2"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/crypto_button"
+                android:text="@string/decrypto_btn_text"
+                android:layout_gravity="center"/>
+
+
         </LinearLayout>
 
-    </LinearLayout>
+        <LinearLayout
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageUploadLayout"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:background="@drawable/layout_borders"
+            android:layout_margin="10dp">
+
+            <ImageView
+                android:layout_marginTop="10dp"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:id="@+id/originalImageView"
+                android:src="@drawable/nopicture"
+                android:layout_gravity="center_horizontal"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_original_image"
+                android:layout_gravity="center"
+                android:textStyle="bold"/>
+            </LinearLayout>
 
 </LinearLayout>

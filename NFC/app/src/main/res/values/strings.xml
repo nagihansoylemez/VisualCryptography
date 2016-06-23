@@ -1,16 +1,16 @@
 <resources>
-    <string name="app_name">NFC</string>
+    <string name="app_name">NFC ile Visual Cryptography</string>
     <string name="action_settings">Settings</string>
     <string name="Button">Paylaştıran</string>
     <string name="Button2">Paylaşan</string>
     <string name="textView">Kullanıcı türünü seçiniz.</string>
-    <string name="title_activity_main2">Paylaştıran</string>
-    <string name="title_activity_main3">Paylaşan</string>
     <string name="btn">Resim Seç</string>
     <string name="crypto_btn_text">Şifrele</string>
+    <string name="decrypto_btn_text">Deşifrele</string>
     <string name="text_original_image">Orjinal Resim</string>
     <string name="text_share_one_image">Pay 1</string>
     <string name="text_share_two_image">Pay 2</string>
-
+    <string name="send_file_btn1">Gönder</string>
+    <string name="send_file_btn2">Gönder</string>
 
 </resources>

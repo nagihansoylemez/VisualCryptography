@@ -3,7 +3,9 @@ package com.example.na.nfc;
 import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -13,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.DialogPreference;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.preference.CheckBoxPreference;
 
 import com.example.na.nfc.listeners.CryptoListener;
 
@@ -31,7 +35,7 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,CryptoListener {
 
     private static final String TAG ="TestApp";
-    private Button cryptoBtn,chooseImage;
+    private Button cryptoBtn,chooseImage, sendShareOne,sendShareTwo;
     private int PICK_IMAGE_REQUEST=1;
     private ImageView original,shareOne,shareTwo;
     private VisualCrypter mCrypter;
@@ -161,7 +165,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 showProgressDialog();
                 new Thread(mCrypter).start();
             }else{
-                // burada alert dialog göster önce resim seçsin.
+                AlertDialog.Builder imageAlert = new AlertDialog.Builder(MainActivity.this);
+                imageAlert.setMessage("Resim seçiniz!");
+                imageAlert.show();
+                // alertdialog eklenecek.
             }
         }
 
@@ -170,6 +177,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             galleryIntent.setType("image/*");
             galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
             startActivityForResult(Intent.createChooser(galleryIntent, "Resim Seç"), PICK_IMAGE_REQUEST);
+        }
+
+        if(v.equals(sendShareOne)){
+
         }
     }
 
